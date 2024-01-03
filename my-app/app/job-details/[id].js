@@ -22,7 +22,7 @@ import { COLORS, icons, SIZES } from "../../constants";
 import useFetch from "../../hook/useFetch";
 import bg from "../../assets/bg.png";
 
-const tabs = ["About", "Qualifications", "Responsibilities"];
+const tabs = ["À propos", "Qualifications", "Responsabilités"];
 
 const JobDetails = () => {
   const params = useSearchParams();
@@ -51,15 +51,15 @@ const JobDetails = () => {
           />
         );
 
-      case "About":
+      case "À propos":
         return (
-          <JobAbout info={data[0].job_description ?? "No data provided"} />
+          <JobAbout info={data[0].job_description ?? "Aucune donnée fournie"} />
         );
 
-      case "Responsibilities":
+      case "Responsabilités":
         return (
           <Specifics
-            title="Responsibilities"
+            title="Responsabilité"
             points={data[0].job_highlights?.Responsibilities ?? ["N/A"]}
           />
         );

@@ -13,6 +13,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
     ...SHADOWS.medium,
     shadowColor: COLORS.white,
+    borderWidth: "1px",
+    borderStyle: "solid",
+    borderColor: "#2199B4"
   },
   logoContainer: {
     width: 50,

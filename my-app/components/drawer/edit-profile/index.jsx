@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { firebase } from "@react-native-firebase/firestore";
 import React, { useState } from "react";
 import {
   Image,
@@ -10,6 +11,7 @@ import {
   View,
 } from "react-native";
 import bg from "../../../assets/bg.png";
+import enviroment from "../../../environment/enviroment";
 
 export default EditProfile = () => {
   // AsyncStorage.getItem("")
@@ -17,9 +19,17 @@ export default EditProfile = () => {
   const [EmailInput, onChangeEmailInput] = useState("");
   const [PasswordInput, onChangePasswordInput] = useState("");
   const [check, setCheck] = React.useState(null);
+  const editUser = async () => {
+    (await firebase.initializeApp(enviroment.firebaseConfig))
+      .firestore()
+      .collection("Users")
+      .get();
+  };
+
   React.useEffect(() => {
     async function checkData() {
       setCheck(JSON.parse(await AsyncStorage.getItem("user")));
+      console.log(check);
     }
     checkData();
   }, []);
@@ -61,7 +71,7 @@ export default EditProfile = () => {
               placeholder="Votre nom complet"
               style={styles.TextInputs}
               onChangeText={onChangeNameInput}
-              value={NameInput}
+              value={check?.displayName}
             />
           </View>
           <View style={styles.InputContainer}>
@@ -72,7 +82,8 @@ export default EditProfile = () => {
               placeholder="Votre adresse electronique"
               style={styles.TextInputs}
               onChangeText={onChangeEmailInput}
-              value={EmailInput}
+              value={check?.email}
+              aria-disabled={true}
             />
           </View>
           <View style={styles.InputContainer}>
@@ -98,6 +109,7 @@ export default EditProfile = () => {
               marginTop: "15%",
               borderRadius: 10,
             }}
+            onPress={editUser}
           >
             <Text
               style={{

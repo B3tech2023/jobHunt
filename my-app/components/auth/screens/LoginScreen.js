@@ -7,13 +7,7 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import React, { useState } from "react";
-import {
-  Image,
-  ImageBackground,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Input } from "react-native-elements";
 import { Text } from "react-native-paper";
 import { ScreenHeaderBtn } from "../../../components";
@@ -25,7 +19,6 @@ import Button from "../components/Button";
 import Header from "../components/Header";
 import { emailValidator } from "../helpers/emailValidator";
 import { passwordValidator } from "../helpers/passwordValidator";
-import bg from "../../../assets/bg.png";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState({ value: "", error: "" });
@@ -68,7 +61,6 @@ export default function LoginScreen({ navigation }) {
       provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider)
       .then(async (result) => {
-        // This gives you a Google Access Token. You can use it to access the Google API.
         const token = result.user.accessToken;
         try {
           const user = result.user.reloadUserInfo;
@@ -94,14 +86,6 @@ export default function LoginScreen({ navigation }) {
         }
       })
       .catch((error) => {
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // The email of the user's account used.
-        const email = error.customData.email;
-        // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
-        // ...
       });
   };
 
@@ -135,7 +119,11 @@ export default function LoginScreen({ navigation }) {
           borderRadius: 5,
           marginTop: 40,
           marginBottom: 20,
+          borderWidth: "1px",
+          borderStyle: "solid",
+          borderColor: "#2199B4",
         }}
+        inputContainerStyle={{ border: "none" }}
         leftIconContainerStyle={{
           backgroundColor: "#D9D9D9",
           borderRadius: 50,
@@ -153,7 +141,7 @@ export default function LoginScreen({ navigation }) {
           color: "#F5F5F5",
           size: 16,
         }}
-        placeholder="Adresse email"
+        placeholder="  Adresse email"
       ></Input>
       <Input
         value={password.value}
@@ -169,6 +157,9 @@ export default function LoginScreen({ navigation }) {
           justifyContent: "flex-start",
           paddingVertical: 0.25,
           borderRadius: 5,
+          borderWidth: "1px",
+          borderStyle: "solid",
+          borderColor: "#2199B4",
         }}
         leftIconContainerStyle={{
           backgroundColor: "#D9D9D9",
@@ -187,7 +178,8 @@ export default function LoginScreen({ navigation }) {
           color: "#F5F5F5",
           size: 16,
         }}
-        placeholder="Mot de passe"
+        inputContainerStyle={{ border: "none" }}
+        placeholder="  Mot de passe"
       ></Input>
       <View style={styles.forgotPassword}>
         <TouchableOpacity

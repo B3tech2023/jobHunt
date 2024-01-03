@@ -1,23 +1,31 @@
+import { initializeApp } from "firebase/app";
+import {
+  GoogleAuthProvider,
+  createUserWithEmailAndPassword,
+  getAuth,
+  signInWithPopup,
+} from "firebase/auth";
 import React, { useState } from "react";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Input } from "react-native-elements";
 import { Text } from "react-native-paper";
 import { theme } from "../../../core/theme";
+import enviroment from "../../../environment/enviroment";
+import ScreenHeaderBtn from "../../common/header/ScreenHeaderBtn";
 import Background from "../components/Background";
 import Button from "../components/Button";
 import Header from "../components/Header";
 import { emailValidator } from "../helpers/emailValidator";
-import { nameValidator } from "../helpers/nameValidator";
 import { passwordValidator } from "../helpers/passwordValidator";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { initializeApp } from "firebase/app";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { icons } from "../../../constants";
 
 export default function RegisterScreen({ navigation }) {
   const [cPassword, setCPassword] = useState({ value: "", error: "" });
   const [email, setEmail] = useState({ value: "", error: "" });
   const [password, setPassword] = useState({ value: "", error: "" });
 
-  const onSignUpPressed = () => {
+  const onSignUpPressed = async () => {
     const cPasswordError = passwordValidator(cPassword.value);
     const emailError = emailValidator(email.value);
     const passwordError = passwordValidator(password.value);
@@ -34,15 +42,59 @@ export default function RegisterScreen({ navigation }) {
     }
     const app = initializeApp(enviroment.firebaseConfig);
 
-    createUserWithEmailAndPassword(
+    await createUserWithEmailAndPassword(
       getAuth(app),
       email.value,
       password.value
-    ).then((val) => console.log(val));
-    navigation.reset({
-      index: 0,
-      routes: [{ name: "Dashboard" }],
+    );
+    navigation.setOptions({
+      headerShown: true,
+      headerLeft: () => (
+        <ScreenHeaderBtn iconUrl={icons.menu} dimension="60%" />
+      ),
+      headerRight: () => (
+        <ScreenHeaderBtn
+          iconUrl={user.photoUrl}
+          handlePress={navigation}
+          dimension="100%"
+        />
+      ),
     });
+    navigation.navigate("Accueil");
+  };
+
+  const googleAuth = async () => {
+    const app = initializeApp(enviroment.firebaseConfig),
+      auth = getAuth(app),
+      provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider)
+      .then(async (result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const token = result.user.accessToken;
+        try {
+          const user = result.user.reloadUserInfo;
+          await AsyncStorage.setItem("token", token);
+          await AsyncStorage.setItem("user", JSON.stringify(user));
+          navigation.setOptions({
+            headerShown: true,
+            headerLeft: () => (
+              <ScreenHeaderBtn iconUrl={icons.menu} dimension="60%" />
+            ),
+            headerRight: () => (
+              <ScreenHeaderBtn
+                iconUrl={user.photoUrl}
+                handlePress={navigation}
+                dimension="100%"
+              />
+            ),
+          });
+          navigation.navigate("Accueil");
+        } catch (error) {
+          // Error saving data
+          console.log(error);
+        }
+      })
+      .catch((error) => {});
   };
 
   return (
@@ -75,6 +127,9 @@ export default function RegisterScreen({ navigation }) {
           borderRadius: 5,
           marginTop: 40,
           marginBottom: 20,
+          borderWidth: "1px",
+          borderStyle: "solid",
+          borderColor: "#2199B4",
         }}
         leftIconContainerStyle={{
           backgroundColor: "#D9D9D9",
@@ -87,13 +142,14 @@ export default function RegisterScreen({ navigation }) {
           paddingRight: 0,
           marginRight: 0.75,
         }}
+        inputContainerStyle={{ border: "none" }}
         leftIcon={{
           type: "font-awesome",
           name: "envelope",
           color: "#F5F5F5",
           size: 16,
         }}
-        placeholder="Adresse email"
+        placeholder="  Adresse email"
       ></Input>
       <Input
         value={password.value}
@@ -110,6 +166,9 @@ export default function RegisterScreen({ navigation }) {
           paddingVertical: 0.25,
           borderRadius: 5,
           marginBottom: 20,
+          borderWidth: "1px",
+          borderStyle: "solid",
+          borderColor: "#2199B4",
         }}
         leftIconContainerStyle={{
           backgroundColor: "#D9D9D9",
@@ -128,14 +187,16 @@ export default function RegisterScreen({ navigation }) {
           color: "#F5F5F5",
           size: 16,
         }}
-        placeholder="Mot de passe"
+        inputContainerStyle={{ border: "none" }}
+        placeholder="  Mot de passe"
       ></Input>
       <Input
         value={cPassword.value}
-        onChangeText={(text) => setPassword({ value: text, error: "" })}
+        onChangeText={(text) => setCPassword({ value: text, error: "" })}
         errorMessage={cPassword.error}
         errorProps={!!cPassword.error}
         secureTextEntry
+        inputContainerStyle={{ border: "none" }}
         containerStyle={{
           backgroundColor: "#F5F5F5",
           display: "flex",
@@ -145,6 +206,9 @@ export default function RegisterScreen({ navigation }) {
           paddingVertical: 0.25,
           borderRadius: 5,
           marginBottom: 20,
+          borderWidth: "1px",
+          borderStyle: "solid",
+          borderColor: "#2199B4",
         }}
         leftIconContainerStyle={{
           backgroundColor: "#D9D9D9",
@@ -163,13 +227,13 @@ export default function RegisterScreen({ navigation }) {
           color: "#F5F5F5",
           size: 16,
         }}
-        placeholder="Confirmation du mot de passe"
+        placeholder="  Confirmation du mot de passe"
       ></Input>
       <View style={styles.row}>
         <Text>— &nbsp; Ou continuez avec &nbsp; — </Text>
       </View>
       <View style={styles.row}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={googleAuth}>
           <Image
             style={{ height: 114, width: 124, marginRight: -20 }}
             source={require("../../../assets/google.png")}

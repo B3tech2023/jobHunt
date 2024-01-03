@@ -16,10 +16,10 @@ import profile1 from "../../assets/profile.png";
 export default function Profile() {
   const navigation = useNavigation();
   const [check, setCheck] = React.useState(null);
+  const reload = React.useCallback(() => setKey((prevKey) => prevKey + 1), []);
   React.useEffect(() => {
     async function checkData() {
       setCheck(JSON.parse(await AsyncStorage.getItem("user")));
-      console.log(check);
     }
     checkData();
   }, []);
@@ -73,10 +73,11 @@ export default function Profile() {
           <View style={[styles.NavButtons, { flex: 0.2 }]}>
             <Pressable
               onPress={() => {
-                navigation.setOptions({
-                  headerShown: false,
-                  headerLeft: null,
+                navigation.setParams({
+                  header: null,
                 });
+                AsyncStorage.clear();
+                window.location.reload();
                 navigation.navigate("LoginScreen");
               }}
               style={{

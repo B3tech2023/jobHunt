@@ -52,7 +52,7 @@ const Home = () => {
         // ),
         headerRight: () => (
           <ScreenHeaderBtn
-            iconUrl={check ? check.photoUrl : images.profile}
+            iconUrl={check ? check?.photoUrl : images.profile}
             handlePress={() => {
               navigation.setOptions({
                 headerLeft: () => (

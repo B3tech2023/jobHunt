@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.small,
     borderRadius: SIZES.medium,
     borderWidth: 1,
-    borderColor: activeJobType === item ? COLORS.secondary : COLORS.gray2,
+    borderColor: activeJobType === item ? COLORS.secondary : "#2199B4",
   }),
   tabText: (activeJobType, item) => ({
     fontFamily: FONT.medium,
