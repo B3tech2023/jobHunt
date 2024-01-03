@@ -9,22 +9,36 @@ import Header from "../components/Header";
 import { emailValidator } from "../helpers/emailValidator";
 import { nameValidator } from "../helpers/nameValidator";
 import { passwordValidator } from "../helpers/passwordValidator";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { initializeApp } from "firebase/app";
 
 export default function RegisterScreen({ navigation }) {
-  const [name, setName] = useState({ value: "", error: "" });
+  const [cPassword, setCPassword] = useState({ value: "", error: "" });
   const [email, setEmail] = useState({ value: "", error: "" });
   const [password, setPassword] = useState({ value: "", error: "" });
 
   const onSignUpPressed = () => {
-    const nameError = nameValidator(name.value);
+    const cPasswordError = passwordValidator(cPassword.value);
     const emailError = emailValidator(email.value);
     const passwordError = passwordValidator(password.value);
-    if (emailError || passwordError || nameError) {
-      setName({ ...name, error: nameError });
+    if (
+      emailError ||
+      passwordError ||
+      cPasswordError ||
+      password.value !== cPassword.value
+    ) {
+      setCPassword({ ...cPassword, error: cPasswordError });
       setEmail({ ...email, error: emailError });
       setPassword({ ...password, error: passwordError });
       return;
     }
+    const app = initializeApp(enviroment.firebaseConfig);
+
+    createUserWithEmailAndPassword(
+      getAuth(app),
+      email.value,
+      password.value
+    ).then((val) => console.log(val));
     navigation.reset({
       index: 0,
       routes: [{ name: "Dashboard" }],
@@ -117,20 +131,20 @@ export default function RegisterScreen({ navigation }) {
         placeholder="Mot de passe"
       ></Input>
       <Input
-        value={password.value}
+        value={cPassword.value}
         onChangeText={(text) => setPassword({ value: text, error: "" })}
-        errorMessage={password.error}
-        errorProps={!!password.error}
+        errorMessage={cPassword.error}
+        errorProps={!!cPassword.error}
         secureTextEntry
         containerStyle={{
           backgroundColor: "#F5F5F5",
           display: "flex",
-          flexDirection: "row" + (email.error === "" ? "" : " wrap"),
+          flexDirection: "row" + (cPassword.error === "" ? "" : " wrap"),
           alignItems: "center",
           justifyContent: "flex-start",
           paddingVertical: 0.25,
           borderRadius: 5,
-          marginBottom: 20
+          marginBottom: 20,
         }}
         leftIconContainerStyle={{
           backgroundColor: "#D9D9D9",

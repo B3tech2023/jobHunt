@@ -26,8 +26,7 @@ const Popularjobs = () => {
     router.push(`/job-details/${item.job_id}`);
     setSelectedJob(item.job_id);
   };
-
-  console.log(data)
+  
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -39,14 +38,13 @@ const Popularjobs = () => {
 
       <View style={styles.cardsContainer}>
         {isLoading ? (
-          <ActivityIndicator size='large' color={COLORS.primary} />
+          <ActivityIndicator size="large" color={COLORS.primary} />
         ) : error ? (
           <Text>Something went wrong</Text>
         ) : (
           <FlatList
             data={data}
             renderItem={({ item }) => (
-
               <PopularJobCard
                 item={item}
                 selectedJob={selectedJob}

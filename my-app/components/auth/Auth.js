@@ -3,6 +3,8 @@ import React from "react";
 import { Provider } from "react-native-paper";
 import { theme } from "../../core/theme";
 import Accueil from "../Accueil";
+import Profile from "../drawer";
+import editProfile from "../drawer/edit-profile";
 import Welcome from "../home/welcome/Welcome";
 import {
   Dashboard,
@@ -33,6 +35,8 @@ export default function Auth() {
           name="ResetPasswordScreen"
           component={ResetPasswordScreen}
         />
+        <Stack.Screen name="Profile" component={Profile} />
+        <Stack.Screen name="EditProfile" component={editProfile}></Stack.Screen>
       </Stack.Navigator>
     </Provider>
   );

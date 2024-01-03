@@ -1,10 +1,23 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  getAuth,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+} from "firebase/auth";
 import React, { useState } from "react";
-import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  ImageBackground,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Input } from "react-native-elements";
 import { Text } from "react-native-paper";
+import { ScreenHeaderBtn } from "../../../components";
+import { icons, images } from "../../../constants";
 import { theme } from "../../../core/theme";
 import enviroment from "../../../environment/enviroment";
 import Background from "../components/Background";
@@ -12,8 +25,7 @@ import Button from "../components/Button";
 import Header from "../components/Header";
 import { emailValidator } from "../helpers/emailValidator";
 import { passwordValidator } from "../helpers/passwordValidator";
-import { ScreenHeaderBtn } from "../../../components";
-import { icons, images } from "../../../constants";
+import bg from "../../../assets/bg.png";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState({ value: "", error: "" });
@@ -27,10 +39,27 @@ export default function LoginScreen({ navigation }) {
       setPassword({ ...password, error: passwordError });
       return;
     }
-    navigation.reset({
-      index: 0,
-      routes: [{ name: "Dashboard" }],
-    });
+    const app = initializeApp(enviroment.firebaseConfig),
+      auth = getAuth(app);
+    signInWithEmailAndPassword(auth, email.value, password.value)
+      .then(async (result) => {
+        console.log(result);
+        navigation.setOptions({
+          headerShown: true,
+          headerLeft: () => (
+            <ScreenHeaderBtn iconUrl={icons.menu} dimension="60%" />
+          ),
+          headerRight: () => (
+            <ScreenHeaderBtn
+              iconUrl={images.profile}
+              handlePress={navigation}
+              dimension="100%"
+            />
+          ),
+        });
+        navigation.navigate("Accueil");
+      })
+      .catch((e) => console.warn(e));
   };
 
   const googleAuth = async () => {
@@ -42,14 +71,20 @@ export default function LoginScreen({ navigation }) {
         // This gives you a Google Access Token. You can use it to access the Google API.
         const token = result.user.accessToken;
         try {
+          const user = result.user.reloadUserInfo;
           await AsyncStorage.setItem("token", token);
+          await AsyncStorage.setItem("user", JSON.stringify(user));
           navigation.setOptions({
             headerShown: true,
             headerLeft: () => (
               <ScreenHeaderBtn iconUrl={icons.menu} dimension="60%" />
             ),
             headerRight: () => (
-              <ScreenHeaderBtn iconUrl={images.profile} dimension="100%" />
+              <ScreenHeaderBtn
+                iconUrl={user.photoUrl}
+                handlePress={navigation}
+                dimension="100%"
+              />
             ),
           });
           navigation.navigate("Accueil");
@@ -194,6 +229,10 @@ export default function LoginScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  main: {
+    display: "flex",
+    backgroundColor: "#000",
+  },
   forgotPassword: {
     width: "100%",
     alignItems: "flex-end",
