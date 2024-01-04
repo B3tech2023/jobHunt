@@ -8,6 +8,12 @@
       "expo-router"
     ],
     "name": "my-app",
-    "slug": "my-app"
+    "slug": "my-app",
+    "android": {
+      "package": "fr.ece.jobhunt"
+    },
+    "ios": {
+      "bundleIdentifier": "fr.ece.jobhunt"
+    }
   }
 }

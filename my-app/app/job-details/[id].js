@@ -7,6 +7,7 @@ import {
   ScrollView,
   ActivityIndicator,
   RefreshControl,
+  ImageBackground,
 } from "react-native";
 
 import {
@@ -19,8 +20,9 @@ import {
 } from "../../components";
 import { COLORS, icons, SIZES } from "../../constants";
 import useFetch from "../../hook/useFetch";
+import bg from "../../assets/bg.png";
 
-const tabs = ["About", "Qualifications", "Responsibilities"];
+const tabs = ["À propos", "Qualifications", "Responsabilités"];
 
 const JobDetails = () => {
   const params = useSearchParams();
@@ -35,30 +37,29 @@ const JobDetails = () => {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    refetch()
-    setRefreshing(false)
+    refetch();
+    setRefreshing(false);
   }, []);
-
 
   const displayTabContent = () => {
     switch (activeTab) {
       case "Qualifications":
         return (
           <Specifics
-            title='Qualifications'
+            title="Qualifications"
             points={data[0].job_highlights?.Qualifications ?? ["N/A"]}
           />
         );
 
-      case "About":
+      case "À propos":
         return (
-          <JobAbout info={data[0].job_description ?? "No data provided"} />
+          <JobAbout info={data[0].job_description ?? "Aucune donnée fournie"} />
         );
 
-      case "Responsibilities":
+      case "Responsabilités":
         return (
           <Specifics
-            title='Responsibilities'
+            title="Responsabilité"
             points={data[0].job_highlights?.Responsibilities ?? ["N/A"]}
           />
         );
@@ -73,54 +74,71 @@ const JobDetails = () => {
       <Stack.Screen
         options={{
           headerStyle: { backgroundColor: COLORS.lightWhite },
-          headerShadowVisible: false,
+          headerShadowVisible: true,
           headerBackVisible: false,
           headerLeft: () => (
             <ScreenHeaderBtn
               iconUrl={icons.left}
-              dimension='60%'
+              dimension="60%"
               handlePress={() => router.back()}
             />
           ),
           headerRight: () => (
-            <ScreenHeaderBtn iconUrl={icons.share} dimension='60%' />
+            <ScreenHeaderBtn iconUrl={icons.share} dimension="60%" />
           ),
           headerTitle: "",
+          headerShown: true,
         }}
       />
 
       <>
-        <ScrollView showsVerticalScrollIndicator={false}
+        <ScrollView
+          showsVerticalScrollIndicator={false}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         >
-          {isLoading ? (
-            <ActivityIndicator size='large' color={COLORS.primary} />
-          ) : error ? (
-            <Text>Something went wrong</Text>
-          ) : data.length === 0 ? (
-            <Text>No data available</Text>
-          ) : (
-            <View style={{ padding: SIZES.medium, paddingBottom: 100 }}>
-              <Company
-                companyLogo={data[0].employer_logo}
-                jobTitle={data[0].job_title}
-                companyName={data[0].employer_name}
-                location={data[0].job_country}
-              />
+          <ImageBackground
+            source={bg}
+            resizeMode="cover"
+            style={{
+              height: "100%",
+              width: "100%",
+            }}
+          >
+            {isLoading ? (
+              <ActivityIndicator size="large" color={COLORS.primary} />
+            ) : error ? (
+              <Text>Something went wrong</Text>
+            ) : data.length === 0 ? (
+              <Text>No data available</Text>
+            ) : (
+              <View style={{ padding: SIZES.medium, paddingBottom: 100 }}>
+                <Company
+                  companyLogo={data[0].employer_logo}
+                  jobTitle={data[0].job_title}
+                  companyName={data[0].employer_name}
+                  location={data[0].job_country}
+                />
 
-              <JobTabs
-                tabs={tabs}
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
-              />
+                <JobTabs
+                  tabs={tabs}
+                  activeTab={activeTab}
+                  setActiveTab={setActiveTab}
+                />
 
-              {displayTabContent()}
-            </View>
-          )}
+                {displayTabContent()}
+              </View>
+            )}
+          </ImageBackground>
         </ScrollView>
 
-        <JobFooter url={data[0]?.job_google_link ?? 'https://careers.google.com/jobs/results/'} />
+        <JobFooter
+          url={
+            data[0]?.job_google_link ??
+            "https://careers.google.com/jobs/results/"
+          }
+        />
       </>
     </SafeAreaView>
   );
