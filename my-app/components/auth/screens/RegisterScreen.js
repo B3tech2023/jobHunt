@@ -19,6 +19,7 @@ import { emailValidator } from "../helpers/emailValidator";
 import { passwordValidator } from "../helpers/passwordValidator";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { icons } from "../../../constants";
+import profile from "../../../assets/profile.png";
 
 export default function RegisterScreen({ navigation }) {
   const [cPassword, setCPassword] = useState({ value: "", error: "" });
@@ -42,11 +43,15 @@ export default function RegisterScreen({ navigation }) {
     }
     const app = initializeApp(enviroment.firebaseConfig);
 
-    await createUserWithEmailAndPassword(
+    const data = await createUserWithEmailAndPassword(
       getAuth(app),
       email.value,
       password.value
     );
+    console.log(data);
+    await AsyncStorage.setItem("token", data.user.accessToken);
+    await AsyncStorage.setItem("user", JSON.stringify(data.user));
+    // alert();
     navigation.setOptions({
       headerShown: true,
       headerLeft: () => (
@@ -54,7 +59,7 @@ export default function RegisterScreen({ navigation }) {
       ),
       headerRight: () => (
         <ScreenHeaderBtn
-          iconUrl={user.photoUrl}
+          iconUrl={profile}
           handlePress={navigation}
           dimension="100%"
         />
