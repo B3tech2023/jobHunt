@@ -1,4 +1,4 @@
-import { Stack, useNavigation } from "expo-router";
+import { Stack, useNavigation, useRouter } from "expo-router";
 import React, { useState } from "react";
 import { ImageBackground, SafeAreaView, ScrollView, View } from "react-native";
 import {
@@ -63,6 +63,7 @@ const Accueil = () => {
               setSearchTerm={setSearchTerm}
               handleClick={() => {
                 if (searchTerm) {
+                  const router = useRouter()
                   router.push(`/search/${searchTerm}`);
                 }
               }}
